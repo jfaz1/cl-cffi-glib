@@ -162,32 +162,10 @@
                                           (find-package :keyword))
                                  *features*)))))
 
-(define-condition foreign-library-version-mismatch (error)
-  ((library :initarg :library :reader .library)
-   (minimum-version :initarg :minimum-version :reader .minimum-version)
-   (actual-version :initarg :actual-version :reader .actual-version))
-  (:report (lambda (c s)
-             (format s "Library ~A has too old version: it is ~A but required ~
-                        to be at least ~A"
-                       (.library c)
-                       (.actual-version c)
-                       (.minimum-version c)))))
-
 (defun require-library-version (library min-major-version
                                         min-minor-version
                                         major-version
-                                        minor-version)
-  (unless (or (> major-version min-major-version)
-              (and (= major-version min-major-version)
-                   (>= minor-version min-minor-version)))
-    (restart-case
-      (error 'foreign-library-version-mismatch
-             :library library
-             :minimum-version (format nil "~A.~A"
-                                      min-major-version min-minor-version)
-             :actual-version (format nil "~A.~A"
-                                     major-version minor-version))
-      (ignore () :report "Ignore version requirement" nil))))
+                                        minor-version))
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
   ;; push the hostname on *features*
